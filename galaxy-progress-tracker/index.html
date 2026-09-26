@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Galaxy Progress Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@200;300;400;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="styles.css" />
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="empty-message">
+      Log your first training session to begin building your constellation.
+    </div>
+
+    <div id="loader">
+      <div id="loader-text">Mapping the galaxy…</div>
+      <div id="loader-bar-track">
+        <div id="loader-bar-fill"></div>
+      </div>
+      <div id="loader-sub">Loading Three.js · Requires internet connection</div>
+    </div>
+
+    <div id="ui">
+      <div id="top-bar">
+        <div id="brand">
+          <div id="brand-dot"></div>
+          <span id="brand-name"
+            >Galaxy Progress Tracker — <span id="state-label">Steady Constellation</span></span
+          >
+        </div>
+        <div id="top-right">
+          <div class="icon-btn" id="settings-btn" title="Settings">⚙</div>
+        </div>
+      </div>
+
+      <div id="legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #ffaa55; box-shadow: 0 0 6px #ffaa55"></div>
+          <span class="legend-label">High load session</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #ffe8c0; box-shadow: 0 0 6px #ffe8c0"></div>
+          <span class="legend-label">Moderate-high session</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #ffffff; box-shadow: 0 0 6px #fff"></div>
+          <span class="legend-label">Balanced session</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #4466cc; box-shadow: 0 0 6px #4466cc"></div>
+          <span class="legend-label">Light session</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background: #9b7be8; box-shadow: 0 0 6px #9b7be8"></div>
+          <span class="legend-label">Recovery / rest</span>
+        </div>
+      </div>
+      <div id="settingsPanel">
+        <h2>Settings</h2>
+        <button id="delete-session-btn" type="button">Delete Session</button>
+        <button id="clear-all-btn" type="button">Clear All Sessions</button>
+        <button id="reset-camera-btn" type="button">Reset Camera View</button>
+        <button id="toggle-lines-btn" type="button">Toggle Constellation Lines</button>
+        <button id="export-sessions-btn" type="button">Export Sessions</button>
+      </div>
+      <div id="guidePanel">
+        <h2>Galaxy Guide</h2>
+        <p><strong>Stars</strong> represent individual training sessions.</p>
+        <p>
+          <strong>Lines</strong> connect sessions in chronological order, revealing how training
+          patterns evolve over time.
+        </p>
+        <p><strong>Brightness and colour</strong> reflect the intensity and loadof each workout.</p>
+        <p><strong>Stability meter</strong> controls how balanced the training routine appears.</p>
+        <p><strong>Hover a star</strong> to view session details.</p>
+        <p><strong>Delete Session</strong> removes that session from the constellation.</p>
+      </div>
+
+      <div id="logTrainingSessionPanel">
+        <h2>Log Session</h2>
+        <label for="activity">Activity</label>
+        <select id="activity">
+          <option value="">Select activity</option>
+          <option>Gym</option>
+          <option>Running</option>
+          <option>BJJ</option>
+          <option>Muay Thai</option>
+        </select>
+        <div id="activity-error" class="form-error"></div>
+        <label for="duration">Duration (minutes)</label>
+        <input id="duration" type="number" placeholder="e.g. 45" />
+        <div id="duration-error" class="form-error"></div>
+        <label for="intensity">Intensity (1–10)</label>
+        <input id="intensity" type="number" min="1" max="10" placeholder="e.g. 7" />
+        <div id="intensity-error" class="form-error"></div>
+        <label for="date">Date</label>
+        <input id="date" type="date" />
+        <div id="date-error" class="form-error"></div>
+        <button id="savebutton">Save Session</button>
+      </div>
+
+      <div id="bottom-panel">
+        <div id="stability-block">
+          <div id="stability-label-row">
+            <span id="stability-title">Stability</span>
+            <span id="stability-value">72</span>
+            <span id="stability-denom">/ 100</span>
+          </div>
+          <div id="stability-status">● Steady Constellation</div>
+          <div id="stability-slider-wrap">
+            <input type="range" id="stability-slider" min="0" max="100" value="72" />
+          </div>
+          <div id="stability-bar-track">
+            <div id="stability-bar-fill"></div>
+          </div>
+          <button id="why-btn">Why?</button>
+        </div>
+        <div id="right-actions">
+          <button id="log-btn"><span class="plus">+</span> Log Session</button>
+          <div id="guide-btn" title="Guide">?</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tooltip">
+      <div class="tooltip-activity" id="tt-activity">Run</div>
+      <div class="tooltip-detail" id="tt-detail">45 min · RPE 7 · Yesterday</div>
+    </div>
+
+    <div id="confirmSingleClearModal">
+      <div id="confirmSingleClearCard">
+        <div id="confirmSingleClearTitle">Delete Sessions</div>
+        <div id="confirmSingleClearText">Select a session to delete:</div>
+        <ul id="sessionList">
+          <!-- List items will be populated by JavaScript -->
+        </ul>
+        <div id="confirmSingleClearActions">
+          <button id="confirmSingleClearCancel" type="button">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="whyPanel">
+      <div id="whyPanel-header">
+        <span id="whyPanel-title">Stability Breakdown</span>
+        <button id="whyPanel-close" aria-label="Close">✕</button>
+      </div>
+      <div id="whyPanel-score-row">
+        <span id="whyPanel-score">0</span>
+        <span id="whyPanel-denom">/ 100</span>
+      </div>
+      <div id="whyPanel-rows">
+        <div class="why-row">
+          <span class="why-label">Recent load <span class="why-sub">(last 14 days)</span></span>
+          <span class="why-val" id="why-recency">0 / 50</span>
+        </div>
+        <div class="why-row">
+          <span class="why-label"
+            >Consistency <span class="why-sub">(distinct days trained)</span></span
+          >
+          <span class="why-val" id="why-consistency">0 / 30</span>
+        </div>
+        <div class="why-row why-row--penalty">
+          <span class="why-label"
+            >Inactivity gap <span class="why-sub" id="why-gap-sub"></span
+          ></span>
+          <span class="why-val" id="why-gap">−0</span>
+        </div>
+      </div>
+      <p id="whyPanel-tip"></p>
+    </div>
+
+    <div id="confirmClearModal">
+      <div id="confirmClearCard">
+        <div id="confirmClearTitle">Clear Constellation</div>
+        <div id="confirmClearText">This will remove all logged sessions and reset the galaxy.</div>
+        <div id="confirmClearActions">
+          <button id="confirmClearCancel" type="button">Cancel</button>
+          <button id="confirmClearConfirm" type="button">Clear All</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="badge-rail">
+      <div id="badge-first-light" class="badge-item locked">
+        <div class="badge-icon-wrap">
+          <img src="badges/first-light.png" alt="First Light badge" />
+          <div class="badge-lock">🔒</div>
+        </div>
+        <div class="badge-text">
+          <span class="badge-label">First Light</span>
+          <span class="badge-subtext">Log your first session</span>
+        </div>
+      </div>
+
+      <div id="badge-constellation-builder" class="badge-item locked">
+        <div class="badge-icon-wrap">
+          <img src="badges/constellation-builder.png" alt="Constellation Builder badge" />
+          <div class="badge-lock">🔒</div>
+        </div>
+        <div class="badge-text">
+          <span class="badge-label">Constellation Builder</span>
+          <span class="badge-subtext">Log 5 sessions across 3 different days</span>
+        </div>
+      </div>
+
+      <div id="badge-balanced-month" class="badge-item locked">
+        <div class="badge-icon-wrap">
+          <img src="badges/balanced-month.png" alt="Balanced Month badge" />
+          <div class="badge-lock">🔒</div>
+        </div>
+        <div class="badge-text">
+          <span class="badge-label">Balanced Month</span>
+          <span class="badge-subtext">Maintain 28 days with average stability above 60</span>
+        </div>
+      </div>
+
+      <div id="badge-recovery-master" class="badge-item locked">
+        <div class="badge-icon-wrap">
+          <img src="badges/recovery-master.png" alt="Recovery Master badge" />
+          <div class="badge-lock">🔒</div>
+        </div>
+        <div class="badge-text">
+          <span class="badge-label">Recovery Master</span>
+          <span class="badge-subtext">Take a recovery day when rest is suggested</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="achievement-popup">
+      <img id="achievement-popup-icon" src="" alt="Achievement badge" />
+      <div id="achievement-text">
+        <div id="achievement-title">Achievement Unlocked</div>
+        <div id="achievement-name">First Light</div>
+      </div>
+    </div>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

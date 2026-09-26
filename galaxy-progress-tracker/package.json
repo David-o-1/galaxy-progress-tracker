@@ -1,0 +1,10 @@
+{
+  "name": "galaxy-progress-tracker",
+  "version": "1.0.0",
+  "description": "A 3D training log that renders your workouts as a constellation, built with Three.js.",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "npx serve ."
+  }
+}
